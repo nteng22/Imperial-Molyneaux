@@ -32,7 +32,7 @@ metadata <- separate(sampleID, index,
 metadata$`Sample-type` <- gsub("FL.CON", "BAL-control", metadata$`Sample-type`)
 metadata$`Sample-type` <- gsub("RC", "Reagent-control", metadata$`Sample-type`)
 metadata$`Sample-type` <- gsub("ILDCON", "BAL-healthy", metadata$`Sample-type`)
-metadata$`Sample-type` <- gsub("OR.CON", "Oral-disease", metadata$`Sample-type`)
+metadata$`Sample-type` <- gsub("OR.CON", "Oral-healthy", metadata$`Sample-type`)
 metadata$`Sample-type` <- gsub("POST", "POST", metadata$`Sample-type`)
 metadata$`Sample-type` <- gsub("PH", "EXCLUDE", metadata$`Sample-type`) 
 # Change PH to BAL-disease if want to include

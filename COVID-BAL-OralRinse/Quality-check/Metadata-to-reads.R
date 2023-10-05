@@ -13,10 +13,10 @@ library("reshape2")
 #remotes::install_github("jbisanz/qiime2R")
 library("qiime2R")
 
-metadata <-read_csv("metadata.csv")
+metadata <-read_csv("Quality-check/metadata.csv")
 
 ### Genus ###
-reads_genus <- read_tsv("Genus-relative-abundance.txt")
+reads_genus <- read_tsv("Quality-check/Genus-relative-abundance.txt")
 reads_genus <- reads_genus %>%
   select(rowname:ncol(reads_genus))
 reads_genus <- column_to_rownames(reads_genus, var = "rowname")
@@ -30,7 +30,7 @@ reads_genus_metadata <- drop_na(reads_genus_metadata) # lose quite a number due 
 write_csv(reads_genus_metadata, "Genus-normalised-metadata.csv")
 
 ### Class ###
-reads_class <- read_tsv("Class-relative-abundance.txt")
+reads_class <- read_tsv("Quality-check/Class-relative-abundance.txt")
 reads_class <- reads_class %>%
   select(rowname:ncol(reads_class))
 reads_class <- column_to_rownames(reads_class, var = "rowname")
@@ -44,7 +44,7 @@ reads_class_metadata <- drop_na(reads_class_metadata) # lose quite a number due 
 write_csv(reads_class_metadata, "Class-normalised-metadata.csv")
 
 ### Phyla ###
-reads_phylum <- read_tsv("Phylum-relative-abundance.txt")
+reads_phylum <- read_tsv("Quality-check/Phylum-relative-abundance.txt")
 reads_phylum <- reads_phylum %>%
   select(rowname:ncol(reads_phylum))
 reads_phylum <- column_to_rownames(reads_phylum, var = "rowname")
