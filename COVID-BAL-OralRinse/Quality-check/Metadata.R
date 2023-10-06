@@ -1,4 +1,5 @@
 setwd("~/GitHub/Imperial-Molyneaux/COVID-BAL-OralRinse//")
+setwd("~/Documents/GitHub/Imperial-Molyneaux/COVID-BAL-OralRinse/")
 
 #install.packages("phyloseq")
 library("phyloseq")
@@ -53,4 +54,25 @@ metadata$patient_ID <- gsub("[..]", "", metadata$patient_ID)
 # As an added safety adding the manifest sampleID to the metadata
 metadata <- cbind(index,metadata)
 
-write_csv(metadata, "Quality-check/metadata.csv")
+duplicates <- metadata[duplicated(metadata %>% select(!index)) &
+                         duplicated(metadata %>% select(!index), fromLast = TRUE),]
+unique_metadata <- metadata %>% # Manually remove the samples I do not want to keep, based of nanodrop and library size
+  filter(!index == "ILDCON1064a.BAL" &
+           !index == "ILDCON1065a.BAL" &
+           !index == "ILDCON1066a.BAL" &
+           !index == "ILDCON1069a.BAL" &
+           !index == "ILDCON1071a.BAL" &
+           !index == "ILDCON1076a.BAL" &
+           !index == "OR.CON1064.OralRinse" &
+           !index == "ILDCON1069.BAL" & 
+           !index == "OR.POST.01.005a.OralRinse" &
+           !index == "OR.POST.01.007a.OralRinse" &
+           !index == "OR.POST.01.013a.OralRinse" &
+           !index == "POST.01.003.BAL" &
+           !index == "POST.01.004.BAL" &
+           !index == "POST.01.007a.BAL" &
+           !index == "POST.01.007.BAL" &
+           !index == "POST.01.011a.BAL" &
+           !index == "POST.01.013.BAL")
+
+write_csv(unique_metadata, "Quality-check/metadata.csv")
