@@ -16,6 +16,7 @@ library("qiime2R")
 
 metadata <-read_csv("../Quality-check/metadata.csv")
 
+# These are proportional ASV reads
 ### Genus ###
 reads_genus <- read_tsv("Genus-relative-abundance.txt")
 reads_genus <- reads_genus %>%
@@ -29,6 +30,7 @@ reads_genus_metadata$`Sample-type` <- gsub("EXCLUDE", NA, reads_genus_metadata$`
 reads_genus_metadata <- drop_na(reads_genus_metadata) # lose quite a number due to low reads
 
 write_csv(reads_genus_metadata, "Genus-normalised-unfiltered-metadata.csv")
+
 
 ### Class ###
 reads_class <- read_tsv("Class-relative-abundance.txt")
