@@ -1,5 +1,5 @@
 #### Housekeeping ####
-setwd("/GitHub/Imperial-Molyneaux/COVID-BAL-OralRinse/")
+setwd("/GitHub/Imperial-Molyneaux/COVID-BAL-OralRinse/Unfiltered/")
 
 #### Download libraries ####
 #install.packages("dplyr")
@@ -16,7 +16,7 @@ library("vegan")
 library("rstatix")
 
 # Read in the saved csv file from previously
-normalised_data <- read.csv("Phylum-normalised-metadata.csv")
+normalised_data <- read.csv("Genus-normalised-unfiltered-metadata.csv")
 
 abundance_table <- normalised_data %>%
   select(5:ncol(normalised_data)) # Only select the reads
@@ -41,16 +41,15 @@ shannon_metadata$Sample.type <- as.factor(shannon_metadata$Sample.type)
 
 # Healthy vs. Disease BAL only (no HC for oral rinse)
 shannon_metadata_filter <- shannon_metadata %>%
-  filter(Sample.type == "BAL") %>%
   filter(Status == "disease" |
-         Status == "healthy")
+           Status == "healthy")
 
 wilcox.test(shannon_diversity ~ Status, data = shannon_metadata_filter)
-# p < 0.4
+# p < 0.34
 
 # By type of sample (oral vs. BAL), can only do disease (paired samples)
 wilcox.test(shannon_diversity ~ Sample.type, data = shannon_metadata_filter)
-# p = 0.8
+# p = 0.5
 
 shannon_metadata <- cbind(metadata, shannon_diversity)
 shannon_metadata <- shannon_metadata %>%
@@ -77,7 +76,7 @@ ggplot(shannon_metadata, aes(x=Sample.type, y=shannon_diversity, color=Sample.ty
   scale_fill_manual(values=c("white", "white", "white")) + # inner colour can change
   facet_grid(. ~ `Status`,
              scales = "free", space = "free") +
-  labs(title="Shannon Diversity by Phyla",
+  labs(title="Shannon Diversity by Genus, with unfiltered 16S data",
        y = "Shannon Diversity Index",
        x = "Sample type") +
   theme(#Set the title font size
@@ -117,5 +116,5 @@ ggplot(shannon_metadata, aes(x=Sample.type, y=shannon_diversity, color=Sample.ty
                              linetype = "solid",
                              colour = "black"))
 
-ggsave("Filtered data/ShannonDiversity-Phyla.pdf", width = 150, height = 150,
+ggsave("ShannonDiversity-Genus-unfiltered.pdf", width = 150, height = 150,
        units = c("mm"), device = "pdf")

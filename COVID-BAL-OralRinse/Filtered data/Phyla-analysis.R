@@ -1,11 +1,12 @@
 setwd("/GitHub/Imperial-Molyneaux/COVID-BAL-OralRinse/")
-setwd("~/Documents/GitHub/Imperial-Molyneaux/COVID-BAL-OralRinse/Filtered data/")
+#setwd("~/Documents/GitHub/Imperial-Molyneaux/COVID-BAL-OralRinse/Filtered data/")
 
 library("dplyr")
 library("vegan")
 library("ggplot2")
+library("tidyverse")
 
-data <- read.csv("../Phylum-normalised-metadata.csv") %>%
+data <- read.csv("Phylum-normalised-metadata.csv") %>%
   filter(!Status == "control") #remove controls
 
 abund_table <- data %>%
@@ -15,7 +16,6 @@ rownames(abund_table) <- data$index
 meta_table <- data %>%
   select(index:Status)
 
-meta_table$patient_ID <- as.factor(meta_table$patient_ID)
 meta_table$Sample.type <- as.factor(meta_table$Sample.type)
 meta_table$Status <- as.factor(meta_table$Status)
 #===============================================================================================================
@@ -367,7 +367,7 @@ p <- ggplot(data = dataframe,
   scale_x_continuous(limits = c(-1.4, 1.1)) +
   # Set the plot title.
   labs(title = "16S microbiota data from Oral rinse vs. BAL",
-       subtitle = "At Phylum level") +
+       subtitle = "At Phylum level, relative proportions of ASVs") +
   theme(# Define the plot title.
     plot.title = element_text(size=10),
     plot.subtitle = element_text(size=8),
@@ -438,25 +438,25 @@ p <- ggplot(data = dataframe,
             size = 3) +
   
   # Add the continuous metadata variable arrows to the ggplot.
-  geom_segment(data = as.data.frame(en_coord_cont_sig),
-               aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2),
+#  geom_segment(data = as.data.frame(en_coord_cont_sig),
+#               aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2),
                # Format the size of the arrow head.
-               arrow = arrow(length = unit(0.2, "cm")),
+#               arrow = arrow(length = unit(0.2, "cm")),
                # Format the color of the arrows.
-               colour = "purple",
+#               colour = "purple",
                # Format the thickness of the arrows.
-               alpha = 0.8) +
+#               alpha = 0.8) +
   
   # Add the continuous metadata names to the ggplot.
-  geom_text(data = en_coord_cont_sig * 1.7, # Make the name labels 1.6 x away from the length of the arrows.
-            aes(x = NMDS1, y = NMDS2),
-            label = row.names(en_coord_cont_sig),
+#  geom_text(data = en_coord_cont_sig * 1.7, # Make the name labels 1.6 x away from the length of the arrows.
+#            aes(x = NMDS1, y = NMDS2),
+#            label = row.names(en_coord_cont_sig),
             # Format the color of the variable names.
-            colour = "purple",
+#            colour = "purple",
             # Format the font of the variable names.
-            fontface = "bold",
+#            fontface = "bold",
             # Format the size of the variable names.
-            size = 3) +
+#            size = 3) +
   
   # Add the categorical metadata variable points to the ggplot.
   geom_point(data = en_coord_cat_sig,
@@ -470,7 +470,7 @@ p <- ggplot(data = dataframe,
   
   # Add the categorical metadata variable names to the ggplot.
   geom_text(data = en_coord_cat_sig,
-            aes(x = NMDS1, y = NMDS2 + 0.08), # Add +0.08 to move the names above the diamonds.
+            aes(x = NMDS1, y = NMDS2 + 0.05), # Add +0.08 to move the names above the diamonds.
             label = row.names(en_coord_cat_sig),
             # Format the color of the variable names.
             colour = "purple",
@@ -486,7 +486,7 @@ p
 
 # This will print into the current working directory file.
 # Set the saved pdf file name and define the size of the plot (height and width are in inches).
-pdf("Filtered 16S data, oral vs. BAL at Phylum.pdf", width = 6, height = 6)
+pdf("Filtered data/16S data, oral vs. BAL at Phylum, relative ASVs.pdf", width = 6, height = 6)
 
 # print(p) saves the figure as a pdf file.
 print(p)

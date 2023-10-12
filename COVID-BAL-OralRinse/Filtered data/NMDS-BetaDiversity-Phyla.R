@@ -17,7 +17,7 @@ library("rstatix")
 
 
 # Read in the saved csv file from previously
-normalised_data <- read.csv("Phylum-normalised-metadata.csv") %>%
+normalised_data <- read.csv("Class-normalised-metadata.csv") %>%
   filter(!Status == "control") #remove controls
 
 abundance_table <- normalised_data %>%
@@ -76,7 +76,7 @@ ggplot(data = plot.data, aes(x = NMDS1, y = NMDS2)) +
   scale_fill_manual(values = c("white", "white", "white")) + 
   scale_colour_manual(values = c("blue", "red", "darkgreen")) + 
   scale_shape_manual(values = c(1, 16)) +
-  labs(title = "NMDS, beta diversity by Phyla") +
+  labs(title = "NMDS, beta diversity by Class") +
   theme(#Set the title font size
     plot.title = element_text(size=8),
     #Set the legend title position
