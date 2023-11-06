@@ -48,7 +48,7 @@ filtered_reads <- prune_taxa(!filter, ps)
 filtered_reads
 summarize_phyloseq(filtered_reads)
 
-sum(taxa_sums(filtered_reads) == 0) # 366 samples equal to 0
+sum(taxa_sums(filtered_reads) == 0) # 498 samples equal to 0
 
 summarize_phyloseq(filtered_reads)
 
@@ -102,6 +102,12 @@ otu_table<-as.data.frame(Controls_Class@otu_table)
 tax<-as.data.frame(tax)
 Controls_Class_final <-left_join(rownames_to_column(otu_table), (rownames_to_column(tax)))
 write.table(Controls_Class_final,file="Unfiltered/Class-relative-abundance.txt", col.names=NA, row.names=T,sep="\t")
+
+Controls_Family <- aggregate_taxa(Controls_relative, 'Family')
+otu_table<-as.data.frame(Controls_Family@otu_table)
+tax<-as.data.frame(tax)
+Controls_Family_final <-left_join(rownames_to_column(otu_table), (rownames_to_column(tax)))
+write.table(Controls_Family_final,file="Unfiltered/Family-relative-abundance.txt", col.names=NA, row.names=T,sep="\t")
 
 Controls_Genus <- aggregate_taxa(Controls_relative, 'Genus')
 otu_table<-as.data.frame(Controls_Genus@otu_table)

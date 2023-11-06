@@ -1,0 +1,12 @@
+
+*.pdf
+COVID-BAL-OralRinse/.DS_Store
+COVID-BAL-OralRinse/.Rhistory
+COVID-BAL-OralRinse/Filtered data/.DS_Store
+COVID-BAL-OralRinse/Quality-check/.DS_Store
+COVID-BAL-OralRinse/Quality-check/.Rhistory
+COVID-BAL-OralRinse/Unfiltered/.DS_Store
+COVID-BAL-OralRinse/Unfiltered/.Rhistory
+COVID-BAL-OralRinse/Quality-check/Contaminant-visualisation.R
+COVID-BAL-OralRinse/Unfiltered/Phylum/.DS_Store
+COVID-BAL-OralRinse/Unfiltered/Genus/.Rhistory
