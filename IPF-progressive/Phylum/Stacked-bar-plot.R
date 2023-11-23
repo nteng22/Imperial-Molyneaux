@@ -1,5 +1,4 @@
-setwd("~/Documents/GitHub/Imperial-Molyneaux/COVID-BAL-OralRinse/Unfiltered/Class/")
-setwd("~/GitHub/Imperial-Molyneaux/COVID-BAL-OralRinse/Unfiltered/Class/")
+setwd("~/GitHub/Imperial-Molyneaux/IPF-progressive/Phylum/")
 
 #install.packages("dplyr")
 library("dplyr")
@@ -10,18 +9,23 @@ library("vegan")
 #install.packages("reshape2")
 library("reshape2")
 
-##Select data
-normalised_data <- read_csv("Class-normalised-unfiltered-metadata.csv") %>%
-  filter(!Status == "control")
+# Read in the saved csv file from previously
+normalised_data <- read_csv("Phylum-normalised.csv") %>%
+  filter(!Diagnosis == "Negative") #remove controls
+
 abund_table <- normalised_data %>%
-  select(5:ncol(normalised_data))
+  select(5:ncol(normalised_data)) # Only select the reads
+rowSums(abund_table) #check if in percentages
+abund_table <- abund_table/rowSums(abund_table)*100
 
 metadata <- normalised_data %>%
-  select(index:Status)
+  select(`sample-id`:Diagnosis) 
 
-# Make the data into percentages
-rowSums(abund_table)
-abund_table <- abund_table/rowSums(abund_table)*100
+metadata$Level1 <- gsub("Controls", "Control", metadata$Level1)
+metadata$Level1 <- as.factor(metadata$Level1)
+metadata$`Sequencing run` <- as.factor(metadata$`Sequencing run`)
+metadata$Diagnosis <- as.factor(metadata$Diagnosis)
+
 
 # Make a dataframe "top" that contains the top 10 most abundant genera. You can alter these as you want.
 top <- abund_table[,order(colSums(abund_table),decreasing=TRUE)]
@@ -54,52 +58,53 @@ top_other_rowsums <- as.data.frame(top_other_rowsums)
 top_other_rowsums
 
 # Select sample_ID
-sample_ID <- normalised_data$index
+sample_ID <- normalised_data$`sample-id`
 
 # Combine the data and the sample names back together again.
 sample_data <- cbind(metadata, top_other)
 
 # OPTIONAL: Order the samples by increasing proportion of one genus.
 sample_data <- sample_data %>%
-  arrange(Clostridia
+  arrange(Firmicutes
           #desc(Bacteroides) # Using desc() If you want to arrange in descending order.
   )
 
 # OPTIONAL: Fix the order of sample IDs in the order of genus proportion.
-sample_data$index <- factor(sample_data$index,
-                            levels=unique(sample_data$index))
+sample_data$`sample-id` <- factor(sample_data$`sample-id`,
+                            levels=unique(sample_data$`sample-id`))
 
 
-# Use melt to turn the data from wide format into long format. This puts all the genus data into a single column.
-sample_data_long <- melt(sample_data, id.vars = c("index",
-                                                  "Sample-type",
-                                                  "Status"), variable.name = "Class")
+# Use melt to turn the data from wide format into long for4mat. This puts all the genus data into a single column.
+sample_data_long <- melt(sample_data, id.vars = c("sample-id",
+                                                  "Level1",
+                                                  "Sequencing run",
+                                                  "Diagnosis"), variable.name = "Class")
 sample_data_long
 
 # Make a palette of colours for your top genus. There are lots of colours to use in R.
 taxa_list # This shows you what those top ones are.
-Palette <- c(Clostridia = "darkseagreen1",
-             Bacteroidia = "darkslategray2",
-             Bacilli = "hotpink3",
-             Actinobacteria = "goldenrod1",
-             Fusobacteriia = "palegreen3",
-             Gammaproteobacteria = "plum",
-             Flavobacteriia = "tan2",
-             Betaproteobacteria = "darkseagreen4",
-             Spirochaetes = "darkslategray4",
-             Coriobacteriia = "deeppink3",
+Palette <- c(Firmicutes = "darkseagreen1",
+             Proteobacteria = "darkslategray2",
+             Actinobacteria = "hotpink3",
+             Bacteroidetes = "goldenrod1",
+             Fusobacteria = "palegreen3",
+             X.Thermi.= "plum",
+             Cyanobacteria = "tan2",
+             #SR1 = "darkseagreen4",
+             #TM7 = "darkslategray4",
+             #Tenericutes = "deeppink3",
              Others = "grey")
 
 
 # Use ggplot2 to make the stacked box plot.
 ggplot(sample_data_long,
-       aes(x = index,
+       aes(x = `sample-id`,
            y = value,
            fill = Class)) +
   #Set the width of the bars in the plot
   geom_bar(stat = "identity",
            width = 0.7) +
-  facet_grid(`Status` ~ `Sample-type`,
+  facet_grid(Level1 ~ .,
              scales = "free", 
              drop = TRUE)+ # Choose to show per category of metadata
   #Set the colors to use the Palette already created
@@ -108,7 +113,7 @@ ggplot(sample_data_long,
   scale_y_continuous(expand = c(0, 0),
                      limits = c(0, 100.1)) +
   #Set the axis labels and title
-  labs(title="Ten most abundant Class",
+  labs(title="Ten most abundant Phylum",
        subtitle = "Unfiltered data",
        x = "Sample ID",
        y = "Relative abundance (%)") +
@@ -149,8 +154,8 @@ ggplot(sample_data_long,
                              linetype = "solid",
                              colour = "black"),
     #Set the aspect ratio of the plot
-    aspect.ratio = 0.5
+    aspect.ratio = 0.2
   )
 
 #Save as a pdf for size to go into Inkspace figure
-ggsave("Ten most abundant Class unfiltered.pdf", width = 300, height = 150, units = c("mm"), dpi = 300)
+ggsave("Ten most abundant Phylum unfiltered.pdf", width = 400, height = 150, units = c("mm"), dpi = 300)

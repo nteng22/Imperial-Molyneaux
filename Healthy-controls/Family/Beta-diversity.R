@@ -1,6 +1,6 @@
 #### Housekeeping ####
-setwd("~/Documents/GitHub/Imperial-Molyneaux/COVID-BAL-OralRinse/Unfiltered/Family/")
-setwd("~/GitHub/Imperial-Molyneaux/COVID-BAL-OralRinse/Unfiltered/Family/")
+setwd("~/GitHub/Imperial-Molyneaux/Healthy-controls/Family/")
+
 
 #### Download libraries ####
 #install.packages("dplyr")
@@ -18,8 +18,8 @@ library("rstatix")
 
 
 # Read in the saved csv file from previously
-normalised_data <- read.csv("Family-normalised-unfiltered-metadata.csv") %>%
-  filter(!Status == "control") #remove controls
+normalised_data <- as.data.frame(read_csv("Family-normalised.csv")) %>%
+  filter(!Diagnosis=="Negative")
 
 abundance_table <- normalised_data %>%
   select(5:ncol(normalised_data)) # Only select the reads
@@ -27,23 +27,13 @@ rowSums(abundance_table) #check if in percentages
 abundance_table <- abundance_table/rowSums(abundance_table)*100
 
 metadata <- normalised_data %>%
-  select(Sample.type:patient_ID) 
-metadata$Sample.type <- as.factor(metadata$Sample.type)
-metadata$Status <- as.factor(metadata$Status)
-metadata$patient_ID <- as.factor(metadata$patient_ID)
+  select("sample-id":Diagnosis)
+metadata$Diagnosis <- as.factor(metadata$Diagnosis)
 
-adonis2(abundance_table ~ Status,
+adonis2(abundance_table ~ Diagnosis,
         data = metadata, permutations = 999, 
         method = "bray")
- # p = 0.006
-adonis2(abundance_table ~ Sample.type, 
-        data = metadata, permutations = 999,
-        method = "bray")
-  # p = 0.001
-# Does status influence sample type
-adonis2(abundance_table ~ Status + Sample.type + Status*Sample.type,
-        data = metadata, permutations = 999,
-        method = "bray")
+# p = 0.2
 
 nmds_calc = metaMDS(abundance_table, distance =  "bray", k = 2, 
                     plot = TRUE,
@@ -57,18 +47,16 @@ plot.data <- cbind(metadata, data.scores)
 
 # Plot using ggplot2
 ggplot(data = plot.data, aes(x = NMDS1, y = NMDS2)) + 
-  geom_point(aes(colour = Sample.type, shape = Status, fill = Sample.type),
+  geom_point(aes(colour = Diagnosis, shape = Diagnosis, fill = Diagnosis),
              size = 3) + 
-  stat_ellipse(aes(colour = Sample.type)) +
-  # scale_"" is used to design the plot
-  scale_fill_manual(values = c("white", "white", "white")) + 
-  scale_colour_manual(values = c("deepskyblue3", "hotpink3", "darkgreen")) + 
-  scale_shape_manual(values = c(1, 16)) +
-  labs(title = "NMDS by Family of unfiltered taxa",
-       subtitle = "PERMANOVA . ~ Sample-type p=0.001, .~Status p=0.008") +
+  #stat_ellipse(aes(colour = Diagnosis)) +
+  #scale_"" is used to design the plot
+  #scale_fill_manual(values = c("white", "white", "white")) + 
+  #scale_colour_manual(values = c("deepskyblue3", "hotpink3", "darkgreen")) + 
+  scale_shape_manual(values = c(1:16)) +
+  labs(title = "NMDS by Family of unfiltered taxa") +
   theme(#Set the title font size
     plot.title = element_text(size=10),
-    plot.subtitle = element_text(size=8),
     #Set the legend title position
     legend.position = "bottom",
     #Set the legend title font size

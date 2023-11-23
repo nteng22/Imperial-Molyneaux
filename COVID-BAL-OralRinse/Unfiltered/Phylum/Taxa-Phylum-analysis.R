@@ -358,16 +358,16 @@ p <- ggplot(data = dataframe,
                       values = c("red1",
                                  "steelblue3")) +
   # Set the shape of the symbols used for each group.
-  scale_shape_manual(name = "Sample-type",
-                     labels = c("BAL",
-                                "Oral"),
+  scale_shape_manual(name = "Status",
+                     labels = c("disease",
+                                "healthy"),
                      # Define the shapes of the symbols used in the plot (each number is a different R symbol).
                      values = c(22, 24)) +
   # Defining the x axis limits helps stop taxa names being cut off.
   scale_x_continuous(limits = c(-1.4, 1.1)) +
   # Set the plot title.
   labs(title = "BAL vs. oral rinse (Unfiltered 16S data)",
-       subtitle = "At Phylum level") +
+       subtitle = "At Phylum level, envfit p < 0.05") +
   theme(# Define the plot title.
     plot.title = element_text(size=10),
     plot.subtitle = element_text(size=8),
@@ -491,3 +491,4 @@ pdf("16S Unfiltered-Phylum analysis.pdf", width = 6, height = 6)
 # print(p) saves the figure as a pdf file.
 print(p)
 dev.off()
+

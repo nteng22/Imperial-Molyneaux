@@ -1,23 +1,24 @@
-setwd("/GitHub/Imperial-Molyneaux/COVID-BAL-OralRinse/")
-setwd("~/Documents/GitHub/Imperial-Molyneaux/COVID-BAL-OralRinse/Unfiltered/Class")
+setwd("/GitHub/Imperial-Molyneaux/IPF-progressive/Class/")
 
 library("dplyr")
 library("vegan")
 library("ggplot2")
 library("tidyverse")
 
-data <- read.csv("Class-normalised-unfiltered-metadata.csv") %>%
-  filter(!Status == "control") #remove controls
+data <- read_csv("Class-normalised.csv") %>%
+  filter(!Level1 == "Negative") #remove controls
 
 abund_table <- data %>%
   select(5:ncol(data)) # Only select the reads
-rownames(abund_table) <- data$index
+rownames(abund_table) <- data$`sample-id`
 
 meta_table <- data %>%
-  select(index:Status)
+  select("sample-id":Diagnosis)
+meta_table$`Sequencing run` <- as.factor(meta_table$`Sequencing run`)
+meta_table$Level1 <- as.factor(meta_table$Level1)
+meta_table$Diagnosis <- as.factor(meta_table$Diagnosis)
+meta_table$Level1 <- gsub("Controls", "Control", meta_table$Level1)
 
-meta_table$Sample.type <- as.factor(meta_table$Sample.type)
-meta_table$Status <- as.factor(meta_table$Status)
 #===============================================================================================================
 # Create bv.step function to use later
 # Code sourced from: userweb.eng.gla.ac.uk/umer.ijaz/bioinformatics/ecological.html
@@ -337,9 +338,9 @@ dataframe <- data.frame(dataframe)
 dataframe <- cbind(dataframe, meta_table)
 # Set the levels of the metadata factor that is used to color the plot.
 # This will set the order groups will appear in the legend and when assigning colors and symbols.
-dataframe$Sample.type <- factor(dataframe$Sample.type,
-                                levels = c("BAL",
-                                           "Oral"
+dataframe$Level1 <- factor(dataframe$Level1,
+                                levels = c("Control",
+                                           "Fibrosis"
                                 ))
 head(dataframe)
 
@@ -349,25 +350,28 @@ p <- ggplot(data = dataframe,
             aes(x = NMDS1,
                 y = NMDS2)) +
   # Set the metadata to be used to change the colour and shape of the plot symbols.
-  geom_point(aes(colour = Sample.type,
-                 shape = Sample.type)) +
+  geom_point(aes(colour = Level1,
+                 shape = Level1)) +
   # Set the color of the symbols used for each group.
-  scale_colour_manual(name = "Sample-type",
-                      labels = c("BAL",
-                                 "Oral"),
+  scale_colour_manual(name = "Diagnosis",
+                      labels = c("Healthy",
+                                 "Fibrosis"),
                       values = c("red1",
-                                 "steelblue3")) +
+                                 "steelblue3",
+                                 "slateblue",
+                                 "seagreen2",
+                                 "hotpink")) +
   # Set the shape of the symbols used for each group.
-  scale_shape_manual(name = "Status",
-                     labels = c("disease",
-                                "healthy"),
+  scale_shape_manual(name = "Diagnosis",
+                     labels = c("Healthy", 
+                                "Fibrosis"),
                      # Define the shapes of the symbols used in the plot (each number is a different R symbol).
-                     values = c(22, 24)) +
+                     values = c(22, 21)) +
   # Defining the x axis limits helps stop taxa names being cut off.
   scale_x_continuous(limits = c(-1.4, 1.1)) +
   # Set the plot title.
   labs(title = "BAL vs. oral rinse (Unfiltered 16S data)",
-       subtitle = "At Class level, no environmental variables were significant") +
+       subtitle = "At Class level, envfit p < 0.05") +
   theme(# Define the plot title.
     plot.title = element_text(size=10),
     plot.subtitle = element_text(size=8),
@@ -486,8 +490,9 @@ p
 
 # This will print into the current working directory file.
 # Set the saved pdf file name and define the size of the plot (height and width are in inches).
-pdf("16S Unfiltered-Class analysis.pdf", width = 6, height = 6)
+pdf("16S Unfiltered-Class analysis- Diagnosis", width = 6, height = 6)
 
 # print(p) saves the figure as a pdf file.
 print(p)
 dev.off()
+
