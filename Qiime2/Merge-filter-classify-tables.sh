@@ -9,7 +9,7 @@
 module load anaconda3/personal
 source activate qiime2-amplicon-2023.9
 
-PROJECT="$WORK/Project2-IPF"
+PROJECT="$WORK/Project3-BAVI"
 MSQ="$WORK/Processed-runs"
 
 cd $WORK
@@ -109,7 +109,7 @@ qiime metadata tabulate \
 qiime taxa barplot \
   --i-table $PROJECT/Merged-runs/filtered-metadata-table.qza \
   --i-taxonomy $PROJECT/Merged-runs/taxonomy-merged-final.qza \
-  --m-metadata-file $PROJECT/Mapping/Manifest-map.txt \
+  --m-metadata-file --m-metadata-file $PROJECT/Mapping/HC_manifest-map.txt \
   --o-visualization $PROJECT/Merged-runs/taxa-bar-plots-merged-final.qzv
 
 # Phylogenetic tree generation
@@ -129,6 +129,12 @@ qiime phylogeny midpoint-root \
   --i-tree $PROJECT/Merged-runs/merged-unrooted-tree.qza \
   --o-rooted-tree $PROJECT/Merged-runs/merged-midrooted-tree.qza
 
+qiime taxa barplot \
+  --i-table $PROJECT/Merged-runs/filtered-metadata-table.qza \
+  --i-taxonomy $PROJECT/Merged-runs/taxonomy-merged-final.qza \
+  --m-metadata-file $PROJECT/Mapping/Manifest-map.txt \
+  --o-visualization $PROJECT/Merged-runs/taxa-bar-plots-merged-final.qzv
+
 # Export files
 mkdir $PROJECT/Merged-runs/exported-files
 
@@ -143,4 +149,3 @@ qiime tools export \
 qiime tools export \
   --input-path $PROJECT/Merged-runs/filtered-metadata-table.qza \
   --output-path $PROJECT/Merged-runs/exported-files/merged_table
-
