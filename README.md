@@ -1,21 +1,43 @@
 # Imperial-Molyneaux
  Projects from the Molyneaux Imperial lab
 
+## Qiime2
+This contains all the scripts needed to run qiime2 on the HPC. <br>
+[Qiime2-16S-pipeline.sh](https://github.com/nteng22/Imperial-Molyneaux/blob/main/Qiime2/Qiime2-16S-pipeline.sh), runs the reads from the sequencing company/machine. Demultiplexes, denoises and clustering. 
+The tutorial with more information can be found [here](https://docs.qiime2.org/2023.9/plugins/available/diversity/alpha/).
+
+All MSQ runs to date (November 2023) have gone through this process and is found on the Fibrosis HPC drive under "Processed-runs".
+For any new MSQ run, you need to run this pipeline.
+**Double check what type of barcodes were used, some barcodes are golay compatible. 
+If this is the case you need to specify --p-rev-comp-barcodes and --p-rev-comp-mapping-barcodes. In the older runs only one needs to be included.**
+ *The only runs that are not golay barcoded are MSQ113 and MSQ114*
+ 
+You can see how many reads are expected by going to the fastq file (forward or reverse) and then:
+```
+wc -l <fastq file>
+```
+>Divide the number you get by 4, and you get a rough idea of how many reads are expected.
+
+To run it on the HPC you need to create your project folder and change the path in the script, **PROJECT**. Also specify the MSQ run/number, **RUN**
+
+[Merge-filter-classify-tables.sh](https://github.com/nteng22/Imperial-Molyneaux/blob/main/Qiime2/Merge-filter-classify-tables.sh) is to assign taxonomy and select for samples that you want. 
+To do this you can create an excel spreadsheet with the samples you want taken from the "16S-Sequencing-Summary-Runs.xlsx" found on the Fibrosis drive or in this repository. **This has not been QCed properly**
+*e.g. if you only want Fibrosis patients you use the master sheet to copy and paste it into a new spreadsheet* 
+**The most imporant thing is the sampleID/#SampleID/index column**
+
+Then use the Manifest-map.R script to merge the sampleIDs you want with the manifest maps submitted to the sequencing team. The R script will save it with a generic name and in the correct format. 
+Copy this to your project folder on the HPC. 
+To run this script on the HPC, the variables **PROJECT, MSQ** need to be defined accordingly. 
+
+[Classifier.sh](https://github.com/nteng22/Imperial-Molyneaux/blob/main/Qiime2/Classifier.sh) is the script to 'train' for weighted taxonomy assignment. 
+
 ## COVID-BAL-OralRinse
 Data from COVID patients and non-COVID patients (healthy), where healthy is defined as patients who did not have a positive COVID test at the time of sampling. <br>
 <br>
 All files were provided by sequencing company and can be used on the galaxy webpage of Qiime2 to visualise initially or download files e.g. <br>
 
-> Used **taxa-bar-plots_norev_quality.qzv** as input file and exported as .csv file. Can use any taxa level, only needed index column as sampleID. <br>
-> [Qiime2-Genus.csv](https://github.com/nteng22/Imperial-Molyneaux/blob/main/COVID-BAL-OralRinse/Quality-check/Qiime2-Genus.csv), Visualised using [galaxy](https://view.qiime2.org/). <br>
-<br>
+## Healthy-controls
+Sequencing data from historical runs defined as diagnosed with non-fibortic disease. 
 
-> General analysis took place, alpha and beta diversity were shannon and NMDS plots respectively.
-> NMDS showed significance which was further investigated using taxa specific analysis to determine what taxa best explains the NMDS plot variance. 
-
-### [Quality-check](https://github.com/nteng22/Imperial-Molyneaux/tree/main/COVID-BAL-OralRinse/Quality-check)
-Contains all the original files to do the QC process. Most of the code is based off of Rachele's work. 
-> [Metadata.csv](https://github.com/nteng22/Imperial-Molyneaux/blob/main/COVID-BAL-OralRinse/Quality-check/metadata.csv) is without Bavi's samples (pre-fixed with PH) and without mock (pre-fixed with MOC) flagged as *Sample-type == EXCLUDE* <br>
-> [Metadata.R](https://github.com/nteng22/Imperial-Molyneaux/blob/main/COVID-BAL-OralRinse/Quality-check/Metadata.R), separates the sampleID submitted for sequencing to the disease types, sample types and patientID. This is done first, before normalisation and removing contaminants. <br>
-> [Contamination-Normalisation.R](https://github.com/nteng22/Imperial-Molyneaux/blob/main/COVID-BAL-OralRinse/Quality-check/Contamination-Normalisation.R), script to identify and remove contaminants from samples. This was based off of 'reagent controls'. Script also includes normalising reads resulting in relative abundancse. Mapping files uses the 'index' present on the metadata file <br>
-> [Metadata-to-reads.R](https://github.com/nteng22/Imperial-Molyneaux/blob/main/COVID-BAL-OralRinse/Quality-check/Metadata-to-reads.R), joins the metadata to relative abundances. Index is used as the variable to join both datasets (normalised reads with metadata).
+## IPF-progressive
+Project to look into the microbiota of stable vs. progressive IPF patients. 
