@@ -15,11 +15,7 @@ RUN="MSQ82 MSQ92 MSQ113 MSQ114"
 
 cd $WORK
 
-# Things you need to have before running this:
-  # Create the metadata file, this has to include the sample ids you want to include in the analysis.
-    # the SAMPLE ID column has to be named "sample-id", otherwise it can throw an error for SQL keywords. 
-  # for simplicity sake, have this metadata file saved in "$PROJECT/Mapping/", where all your mapping files for any projec is kept.
-
+# Things you need to have before running this. This needs to be created in the HPC environment. 
   # Specify the path to your project folder:
 PROJECT="$WORK/Processed-runs/with-comp-barcodes"
 
