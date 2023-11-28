@@ -11,7 +11,7 @@ library("reshape2")
 
 metadata <- read_xlsx("HC-list.xlsx")
 metadata <- dplyr::rename("sample-id" = "#SampleID", metadata)
-metadata <- metadata[duplicated(metadata$`sample-id`), ] #remove duplicated sample id
+metadata <- metadata[!duplicated(metadata$`sample-id`), ] #remove duplicated sample id
 
 normalised_data <- read_tsv("Phylum/Phylum-relative-abundance.txt")
 normalised_data <- column_to_rownames(normalised_data, "...1")
