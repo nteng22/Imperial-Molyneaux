@@ -57,8 +57,6 @@ qiime dada2 denoise-paired \
   --p-trim-left-r 13 \
   --p-trunc-len-f 140 \
   --p-trunc-len-r 140 \
-  --p-max-ee-f 50 \
-  --p-max-ee-r 50 \
   --o-representative-sequences $PROJECT/"$f"/denoise/"$f"_rep-seqs-dada2.qza \
   --o-table $PROJECT/"$f"/denoise/"$f"_table-dada2.qza \
   --o-denoising-stats $PROJECT/"$f"/denoise/"$f"_dada-2_stats.qza
