@@ -31,9 +31,6 @@ To run this script on the HPC, the variables **PROJECT, MSQ** need to be defined
 
 [Classifier.sh](https://github.com/nteng22/Imperial-Molyneaux/blob/main/Qiime2/Classifier.sh) is the script to 'train' for weighted taxonomy assignment. 
 
-## Healthy-controls
-Sequencing data from historical runs defined as diagnosed with non-fibortic disease. 
-
 ## IPF-progressive
 Project to look into the microbiota of stable vs. progressive IPF patients. Includes creating the spreadsheet to classify the patients.  
 
