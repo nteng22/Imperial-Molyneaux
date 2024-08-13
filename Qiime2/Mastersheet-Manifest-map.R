@@ -16,8 +16,10 @@ sampleID <- dplyr::rename("#SampleID" = colnames(sampleID), sampleID) %>%
 metadata <- read_csv("../16S Master sheet.csv")
 
 unique_manifest <- inner_join(sampleID, metadata) %>%
-  select(-"#SampleID") %>%
-  relocate(.after = NULL, "sample-id")
+  select(-"sample-id") %>%
+  relocate(.after = NULL, "#SampleID")
+# "#SampleID" is the submitted sequencing name, 
+# "sample-id" is what the spreadsheet shows... 
 
 write.table(unique_manifest, file = "Original-files/Manifest-map.txt", sep = "\t",
             row.names = FALSE, quote = FALSE)
