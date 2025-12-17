@@ -46,3 +46,6 @@ The two packages had conflicts with which python to use so the pipeline has been
 
 ## POSTCODE
 Lung microbiota of post-COVID patients with long lasting lung abnormalities. [POSTCODE-manuscript.R] (<https://github.com/molyneaux-lab/POSTCODE>) contains the data analysis and plots made. The repository includes: the SRA data, sample_names_files, metadata files and Qiime2 artefacts to run the analysis yourself. Healthy controls include non-fibrotic patients. CHP and IPF samples were taken from a previous published project from our lab found at [PRJNA609242](https://www.ncbi.nlm.nih.gov/sra/?term=PRJNA609242). I started making my own repo but then we moved to the lab GitHub, where everything is now. 
+
+## IPF-SCFA
+Paper assessing SCFA in the lung of IPF patients. [IPF-SCFA.R](https://github.com/nteng22/Imperial-Molyneaux/blob/main/IPF-SCFA/IPF-SCFA.R), has the R script to create the figures needed. Repo should include the SRA data and metadata sheets: [PRJNA772278](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA772278). 
