@@ -1,7 +1,7 @@
 setwd("~/Documents/GitHub/Imperial-Molyneaux/IPF-SCFA/")
 #renv::activate()
 renv::restore()
-metadata = read_csv("Propionate_metadata.csv")
+
 setwd("~/OneDrive - Imperial College London/Projects/Experiments/NT001_Microbiota-analysis/Propionate/")
 path <- getwd()
 
@@ -66,7 +66,7 @@ physeq<-qza_to_phyloseq(
   tree="Original-files/merged-midrooted-tree.qza",
   taxonomy= "Original-files/taxonomy-merged-final.qza")
 physeq 
-
+metadata = read_csv("Original-files/Propionate_metadata.csv")
 #phyloseq-class experiment-level object
 #otu_table()   OTU Table:         [ 762 taxa and 255 samples ]
 #tax_table()   Taxonomy Table:    [ 762 taxa by 7 taxonomic ranks ]
@@ -581,21 +581,21 @@ heatmap <- Heatmap(as.matrix(top_other), # The dataframe containing the heatmap 
                    cluster_rows = row_clustering, # Cluster the rows using the predefined clustering
                    #cluster_columns = col_clustering, # Cluster the columns using the predefined clustering
                    show_row_names = TRUE, # Show or hide the row names, TRUE to show rownames
-                   row_names_gp = gpar(fontsize = 6), # Row name font size
-                   column_names_gp = gpar(fontsize = 8, # Column name font size
+                   row_names_gp = gpar(fontsize = 8), # Row name font size
+                   column_names_gp = gpar(fontsize = 10, # Column name font size
                                           fontface = "italic"), # Column names in italics
-                   column_title_gp = gpar(fontsize = 8), # Column title font size
+                   column_title_gp = gpar(fontsize = 10), # Column title font size
                    row_title = "Samples", # Set row title
                    row_labels = rownames(top_other),
                    row_names_side = c("left"),
-                   row_title_gp = gpar(fontsize = 8), # Set row title font size
+                   row_title_gp = gpar(fontsize = 10), # Set row title font size
                    column_title = "", # Set column title
                    column_title_side = "bottom", # Set column title font size
                    heatmap_legend_param = list(title = "Relative\nabundance\n(%)", # Set legend title
                                                at = c(0,20,40,60,80,100), # Set legend scale breaks
                                                labels = c("0","20","40","60","80","100"), # Set legend scale labels
-                                               title_gp = gpar(fontsize = 8), # Set legend title font size
-                                               labels_gp = gpar(fontsize = 8))) # Set legend label font size
+                                               title_gp = gpar(fontsize = 10), # Set legend title font size
+                                               labels_gp = gpar(fontsize = 10))) # Set legend label font size
 
 p <- heatmap + sidebar_annotation1
 p
@@ -631,6 +631,10 @@ metadata_GCMS <- metadata_GCMS %>%
   filter(!is.na(`Acetic acid`)) %>%
   mutate(Diagnosis = as.factor(Diagnosis))
 
+metadata_GCMS %>%
+  group_by(Diagnosis) %>%
+  summarise(median_propionate = median(Propionate))
+
 ##### Boxplots #####
 # I don't know what the detectable range is for these.
 wilcox.test(`Acetic acid` ~ Diagnosis, metadata_GCMS)
@@ -646,7 +650,7 @@ ggplot(metadata_GCMS, aes(x = Diagnosis, y = `Acetic acid`, colour = Diagnosis))
   labs(y = "[Metabolite in BAL] (µM)",
        title = "Acetate") + ylim(c(0,200)) +
   theme(axis.text = element_text(size=14),
-        axis.title = element_text(size=12),
+        axis.title = element_text(size=16),
         legend.position = "none",
         plot.title = element_text(size=18, hjust=0.5), family = "bold")
 
@@ -664,7 +668,7 @@ ggplot(metadata_GCMS, aes(x = Diagnosis, y = `Butyric acid`, colour = Diagnosis)
   labs(y = "[Metabolite in BAL] (µM)",
        title = "Butyrate") + ylim(c(0,60)) +
   theme(axis.text = element_text(size=14),
-        axis.title = element_text(size=12),
+        axis.title = element_text(size=16),
         legend.position = "none",
         plot.title = element_text(size=18, hjust=0.5), family = "bold")
 
@@ -682,7 +686,7 @@ ggplot(metadata_GCMS, aes(x = Diagnosis, y = `Lactic acid`, colour = Diagnosis))
   labs(y = "[Metabolite in BAL] (µM)",
        title = "Lactate") + 
   theme(axis.text = element_text(size=14),
-        axis.title = element_text(size=12),
+        axis.title = element_text(size=16),
         legend.position = "none",
         plot.title = element_text(size=18, hjust=0.5), family = "bold")
 ggsave("Genus/Lactic-boxplot.svg", width = 4, height = 6)
@@ -699,7 +703,7 @@ ggplot(metadata_GCMS, aes(x = Diagnosis, y = `Propionic acid`, colour = Diagnosi
   labs(y = "[Metabolite in BAL] (µM)",
        title="Propionate") +
   theme(axis.text = element_text(size=14),
-        axis.title = element_text(size=12),
+        axis.title = element_text(size=16),
         legend.position = "none",
         plot.title = element_text(size=18, hjust=0.5), family = "bold")
 
@@ -719,11 +723,13 @@ PCA <- prcomp(metadata_GCMS[c("Acetate", "Propionate", "Butyrate", "Lactate")],
 
 ggbiplot(PCA, obs.scale = 0, var.scale = 0.5,
          groups=metadata_GCMS$Diagnosis, ellipse = T, circle=F,
-         varname.size = 2) +
+         varname.size = 5) +
   scale_color_discrete(name="")+
   theme(legend.direction = 'horizontal', legend.position = 'top',
-        ) + theme_classic(base_size = 6) + 
-  scale_color_manual(values=Palette_color) 
+        legend.text = element_text(size=16),
+        axis.text = element_text(size=16),
+        axis.title = element_text(size=16)) + theme_classic(base_size = 10) + 
+  scale_color_manual(values=Palette_color)
 
 ggsave("Genus/GCMS-PCA.svg", width = 8, height=8)
 
@@ -1554,8 +1560,8 @@ sidebar_annotation1 <- rowAnnotation(df = annot_df1, # Dataframe containing trea
                                      show_annotation_name = TRUE,
                                      annotation_width = unit(c(.2), "cm"), # Set the width of the side bar
                                      annotation_legend_param = list(title = "Diagnosis", # Sidebar legend title
-                                                                    title_gp = gpar(fontsize = 10), # Sidebar legend title font size
-                                                                    labels_gp = gpar(fontsize = 10))) # Sidebar legend label font size
+                                                                    title_gp = gpar(fontsize = 16), # Sidebar legend title font size
+                                                                    labels_gp = gpar(fontsize = 14))) # Sidebar legend label font size
 
 annot_df2 <- data.frame(Propionate = meta_heatmap$Propionate)
 col2 = list(Propionate= colorRamp2(c(0, 50, 100, 150), 
@@ -1565,8 +1571,8 @@ sidebar_annotation2 <- rowAnnotation(df = annot_df2,
                                      show_annotation_name = T,
                                      annotation_width = unit(c(.2), "cm"), # Set the width of the side bar
                                      annotation_legend_param = list(title = "Propionate", 
-                                                                    title_gp = gpar(fontsize = 10),
-                                                                    labels_gp = gpar(fontsize = 10)))
+                                                                    title_gp = gpar(fontsize = 16),
+                                                                    labels_gp = gpar(fontsize = 14)))
 
 annot_df3 <- data.frame(Lactate = meta_heatmap$Lactate)
 col3 = list(Lactate= colorRamp2(c(0, 10, 15, 20), 
@@ -1576,8 +1582,8 @@ sidebar_annotation3 <- rowAnnotation(df = annot_df3,
                                      show_annotation_name = T,
                                      annotation_width = unit(c(.2), "cm"), # Set the width of the side bar
                                      annotation_legend_param = list(title = "Lactate", 
-                                                                    title_gp = gpar(fontsize = 10),
-                                                                    labels_gp = gpar(fontsize = 10)))
+                                                                    title_gp = gpar(fontsize = 16),
+                                                                    labels_gp = gpar(fontsize = 14)))
 
 annot_df4 <- data.frame(Butyrate = meta_heatmap$Butyrate)
 col4 = list(Butyrate= colorRamp2(c(0, 15, 30, 50), 
@@ -1587,8 +1593,8 @@ sidebar_annotation4 <- rowAnnotation(df = annot_df4,
                                      show_annotation_name = T,
                                      annotation_width = unit(c(.2), "cm"), # Set the width of the side bar
                                      annotation_legend_param = list(title = "Butyrate", 
-                                                                    title_gp = gpar(fontsize = 10),
-                                                                    labels_gp = gpar(fontsize = 10)))
+                                                                    title_gp = gpar(fontsize = 16),
+                                                                    labels_gp = gpar(fontsize = 14)))
 annot_df5 <- data.frame(Acetate = meta_heatmap$Acetate)
 col5 = list(Acetate= colorRamp2(c(0, 50, 100, 150), 
                                       c("#fec682","#E18727","#BC3C29", "#B22222")))
@@ -1597,8 +1603,8 @@ sidebar_annotation5 <- rowAnnotation(df = annot_df5,
                                      show_annotation_name = T,
                                      annotation_width = unit(c(.2), "cm"), # Set the width of the side bar
                                      annotation_legend_param = list(title = "Acetate", 
-                                                                    title_gp = gpar(fontsize = 10),
-                                                                    labels_gp = gpar(fontsize = 10)))
+                                                                    title_gp = gpar(fontsize = 16),
+                                                                    labels_gp = gpar(fontsize = 14)))
 
 sorted_samples <- meta_heatmap$Sample
 
@@ -1609,21 +1615,21 @@ heatmap <- Heatmap(as.matrix(sort_order),  # The dataframe containing the heatma
                    col = colour_palette, # The predefined colour palette
                    cluster_rows = F, # Cluster the rows using the predefined clustering
                    show_row_names = TRUE, # Show or hide the row names, TRUE to show rownames
-                   row_names_gp = gpar(fontsize = 10), # Row name font size
-                   column_names_gp = gpar(fontsize = 10, # Column name font size
+                   row_names_gp = gpar(fontsize = 14), # Row name font size
+                   column_names_gp = gpar(fontsize = 14, # Column name font size
                                           fontface = "italic"), # Column names in italics
-                   column_title_gp = gpar(fontsize = 10), # Column title font size
+                   column_title_gp = gpar(fontsize = 14), # Column title font size
                    row_title = "Samples", # Set row title
                    row_labels = rownames(sort_order),
                    row_names_side = c("left"),
-                   row_title_gp = gpar(fontsize = 10), # Set row title font size
+                   row_title_gp = gpar(fontsize = 14), # Set row title font size
                    column_title = "", # Set column title
                    column_title_side = "bottom", # Set column title font size
                    heatmap_legend_param = list(title = "Relative\nabundance\n(%)", # Set legend title
                                                at = c(0,20,40,60,80,100), # Set legend scale breaks
                                                labels = c("0","20","40","60","80","100"), # Set legend scale labels
-                                               title_gp = gpar(fontsize = 10), # Set legend title font size
-                                               labels_gp = gpar(fontsize = 10))) # Set legend label font size
+                                               title_gp = gpar(fontsize = 14), # Set legend title font size
+                                               labels_gp = gpar(fontsize = 14))) # Set legend label font size
 
 p <- heatmap + sidebar_annotation2 +
   sidebar_annotation3 + sidebar_annotation4 + sidebar_annotation5
