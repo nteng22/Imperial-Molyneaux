@@ -1,0 +1,17 @@
+#PBS -l walltime=2:00:00
+#PBS -l select=1:ncpus=12:mem=40gb
+#PBS -N minimap-index
+
+cd /rds/general/user/mteng/ephemeral/Project11-Nanopore-test/
+eval "$(~/anaconda3/bin/conda shell.bash hook)"
+conda activate minimap2_env
+
+# download separately
+# wget https://downloads.pacbcloud.com/public/reference-genomes/human_GRCh38_no_alt_analysis_set.tar.2023-12-04.gz
+# Save at appropriate place
+# no_alt: no alternate contigs
+# analysis_set: undergone some preprocessing
+
+minimap2 -d GRCh38.mmi /rds/general/user/mteng/home/database/human_GRCh38_no_alt_analysis_set/human_GRCh38_no_alt_analysis_set.fasta
+
+# need to install minimap2 and suggested to include samtools as this will be used later to remove host reads
