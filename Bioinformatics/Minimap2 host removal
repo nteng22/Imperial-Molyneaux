@@ -1,0 +1,75 @@
+#!/bin/bash
+
+#PBS -l walltime=8:00:00
+#PBS -l select=1:ncpus=4:mem=48gb
+#PBS -N minimap_host_removal
+
+set -euo pipefail
+IFS=$'\n\t'
+
+# --- Configuration ---
+# You need a file "basename.txt" in the project folder. 
+# This will have the sampleID names only without extra's. Easier for the pipeline. 
+
+WORKDIR="${PBS_O_WORKDIR:-/rds/general/user/mteng/ephemeral/[project]}"
+INPUT_DIR="01_fastq"
+OUTPUT_DIR="02_host_removed"
+REF_INDEX="/rds/general/user/mteng/home/database/GRCh38.mmi"
+FASTQ_LIST="fastq_list.txt"
+
+cd "$WORKDIR" || { echo "Failed to cd to $WORKDIR" >&2; exit 1; }
+
+eval "$(~/anaconda3/bin/conda shell.bash hook)"
+conda activate minimap2_env
+
+mkdir -p "$OUTPUT_DIR"
+mkdir -p logs
+
+# --- PBS PRO VARIABLE CHECK ---
+# PBS Pro uses PBS_ARRAY_INDEX.
+if [ -z "${PBS_ARRAY_INDEX:-}" ]; then
+    echo "ERROR: PBS_ARRAY_INDEX is not set. Are you running this with qsub?" >&2
+    exit 1
+fi
+
+if [ ! -f "$FASTQ_LIST" ]; then
+    echo "ERROR: $FASTQ_LIST not found in $PWD" >&2
+    exit 1
+fi
+
+# Get input filename using the PBS_ARRAY_INDEX
+INPUT_FILENAME=$(awk -v idx="$PBS_ARRAY_INDEX" 'NR==idx{print; exit}' "$FASTQ_LIST")
+
+if [ -z "$INPUT_FILENAME" ]; then
+    echo "ERROR: No input file found for index $PBS_ARRAY_INDEX" >&2
+    exit 1
+fi
+
+# Construct full path
+INPUT_PATH="${INPUT_DIR}/${INPUT_FILENAME}"
+
+if [ ! -f "$INPUT_PATH" ]; then
+    echo "ERROR: Input file does not exist at: $INPUT_PATH" >&2
+    exit 1
+fi
+
+SAMPLE_NAME=$(basename "$INPUT_FILENAME" .fastq.gz)
+
+# Threads: 3 for minimap, 1 for samtools
+MM_THREADS=3
+ST_THREADS=1
+
+echo "--- Starting job for: ${SAMPLE_NAME} (Index: $PBS_ARRAY_INDEX) ---"
+echo "Reading from: $INPUT_PATH"
+
+# --- Run Pipeline ---
+# (Using -u for uncompressed BAM in pipe to save CPU)
+if minimap2 -a -t "$MM_THREADS" -x map-hifi "$REF_INDEX" "$INPUT_PATH" | \
+   samtools view -@ "$ST_THREADS" -b -f 4 -u - -F 256 -F 2048 -u - | \
+   samtools fastq -@ "$ST_THREADS" - | gzip -c > "${OUTPUT_DIR}/${SAMPLE_NAME}_nonhost.fastq.gz"; then
+    
+    echo "Success. Output saved to: ${OUTPUT_DIR}/${SAMPLE_NAME}_nonhost.fastq.gz"
+else
+    echo "ERROR: Pipeline failed for ${SAMPLE_NAME}." >&2
+    exit 1
+fi
